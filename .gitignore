@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.env
+models/
+data/raw/
+.kaggle/
+*.pkl
+*.joblib
+*.zip
+*.csv
+*.tsv
