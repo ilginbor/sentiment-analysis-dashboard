@@ -12,11 +12,13 @@ Uygulama, yorumları **Positive**, **Negative** veya model güven skoru düşük
 
 * [Proje Amacı](#proje-amacı)
 * [Proje Özellikleri](#proje-özellikleri)
+* [Sistem Tasarımı](#sistem-tasarımı)
 * [Kullanılan Teknolojiler](#kullanılan-teknolojiler)
 * [Veri Seti](#veri-seti)
 * [Proje Klasör Yapısı](#proje-klasör-yapısı)
 * [NLP Ön İşleme Süreci](#nlp-ön-i̇şleme-süreci)
 * [Makine Öğrenmesi Modelleri](#makine-öğrenmesi-modelleri)
+* [Model Seçim Gerekçesi](#model-seçim-gerekçesi)
 * [SQL Server Veritabanı Yapısı](#sql-server-veritabanı-yapısı)
 * [Kurulum Adımları](#kurulum-adımları)
 * [Projeyi Çalıştırma Sırası](#projeyi-çalıştırma-sırası)
@@ -74,6 +76,49 @@ Projede aşağıdaki özellikler bulunmaktadır:
 * Kelime frekans analizi
 * Model karşılaştırma grafikleri
 * GitHub üzerinde anlamlı commit geçmişi
+
+---
+
+## Sistem Tasarımı
+
+Proje uçtan uca bir duygu analizi sistemi olarak tasarlanmıştır. Sistem; veri hazırlama, model eğitimi, SQL Server veritabanı entegrasyonu ve Streamlit dashboard katmanlarından oluşmaktadır.
+
+Sistemin genel akışı aşağıdaki gibidir:
+
+```text
+Kaggle Veri Seti
+        ↓
+Veri Ön İşleme
+        ↓
+Metin Temizleme, Tokenization, Stopword Temizleme
+        ↓
+TF-IDF Özellik Çıkarımı
+        ↓
+Model Eğitimi ve Model Karşılaştırması
+        ↓
+En İyi Modelin Kaydedilmesi
+        ↓
+Yeni Yorum Tahmini
+        ↓
+SQL Server'a Kayıt
+        ↓
+Streamlit Dashboard ile Görselleştirme
+```
+
+Sistemde `scripts/` klasörü veri hazırlama, veritabanı yükleme ve model eğitimi işlemlerini yürütür. `app/` klasörü ise veritabanı bağlantısı, tahmin işlemleri ve dashboard arayüzünü içerir.
+
+SQL Server tarafında model sonuçları, yorum tahminleri, hazırlanmış veri kayıtları ve confusion matrix değerleri ayrı tablolar halinde tutulur. Böylece hem model performansı hem de kullanıcı yorum tahminleri izlenebilir hale getirilmiştir.
+
+Sistem dört ana bileşenden oluşmaktadır:
+
+| Bileşen                | Açıklama                                                                                 |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| Veri Hazırlama Katmanı | Kaggle veri setini okur, temizler, tokenize eder ve hazırlanmış veri oluşturur.          |
+| Model Eğitim Katmanı   | TF-IDF özellikleriyle üç farklı makine öğrenmesi modelini eğitir ve karşılaştırır.       |
+| Veritabanı Katmanı     | SQL Server üzerinde yorumları, model sonuçlarını ve confusion matrix değerlerini saklar. |
+| Dashboard Katmanı      | Kullanıcıdan yorum alır, tahmin sonucu gösterir ve grafiklerle analiz sunar.             |
+
+Bu tasarım sayesinde proje yalnızca model eğitimi yapan bir çalışma olmaktan çıkarılmış, veritabanı bağlantısı ve kullanıcı arayüzü bulunan tam işlevsel bir uygulama haline getirilmiştir.
 
 ---
 
@@ -241,6 +286,26 @@ models/model_comparison.csv
 ```
 
 Dashboard üzerinde model sonuçları hem tablo hem grafik olarak gösterilmektedir.
+
+---
+
+## Model Seçim Gerekçesi
+
+Bu projede **Logistic Regression**, **Naive Bayes** ve **Support Vector Machine** modelleri seçilmiştir. Bu algoritmalar metin sınıflandırma problemlerinde sık kullanılan, hızlı eğitilebilen ve performans karşılaştırması için uygun makine öğrenmesi yöntemleridir.
+
+### Logistic Regression
+
+Logistic Regression, TF-IDF ile temsil edilen metin verilerinde başarılı sonuçlar verebilen, yorumlanabilir ve güçlü bir sınıflandırma algoritmasıdır. Bu nedenle projede temel güçlü modellerden biri olarak kullanılmıştır.
+
+### Naive Bayes
+
+Naive Bayes, özellikle metin sınıflandırma ve duygu analizi problemlerinde sık kullanılan hızlı bir algoritmadır. Kelime frekansları ve olasılık temelli yaklaşımı nedeniyle bu projede karşılaştırma modeli olarak tercih edilmiştir.
+
+### Support Vector Machine
+
+Support Vector Machine, yüksek boyutlu veri setlerinde başarılı sonuçlar verebilen bir modeldir. TF-IDF ile oluşturulan metin özellikleri yüksek boyutlu olduğundan SVM bu proje için uygun bir model olarak değerlendirilmiştir.
+
+Bu üç modelin birlikte kullanılması, farklı algoritmaların aynı veri seti üzerindeki performansını karşılaştırmayı sağlamıştır. En iyi model seçilirken özellikle **F1-score** metriği dikkate alınmıştır. Çünkü F1-score, precision ve recall değerlerini birlikte değerlendirdiği için sınıflandırma performansını daha dengeli şekilde gösterir.
 
 ---
 
@@ -854,6 +919,7 @@ Add sentiment prediction and SQL logging module
 Add Streamlit dashboard with analytics and model comparison
 Add project documentation and setup instructions
 Update README with Turkish documentation and project screenshots
+Add system design and model selection rationale to README
 ```
 
 Bu commit yapısı, projenin geliştirme adımlarının izlenebilir olmasını sağlar.
@@ -885,6 +951,7 @@ Bu proje, NLP, makine öğrenmesi, SQL Server, Docker ve dashboard geliştirme s
 ## Geliştirici
 
 **Ilgın Bor**
+
 
 
 
