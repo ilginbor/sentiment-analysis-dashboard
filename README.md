@@ -40,6 +40,7 @@ Bu sistem sayesinde:
 * Dashboard üzerinden yorum istatistikleri takip edilir.
 * Eğitilen modellerin performansları karşılaştırılır.
 * Confusion matrix sonuçları görselleştirilir.
+* SQL Server tabloları üzerinden veri kayıtları kontrol edilebilir.
 
 Bu proje; veri ön işleme, makine öğrenmesi, SQL veritabanı entegrasyonu, hata yönetimi ve dashboard geliştirme adımlarını bir araya getiren uçtan uca bir veri bilimi uygulamasıdır.
 
@@ -69,8 +70,6 @@ Projede aşağıdaki özellikler bulunmaktadır:
 ---
 
 ## Kullanılan Teknolojiler
-
-Projede kullanılan başlıca teknolojiler şunlardır:
 
 | Teknoloji    | Kullanım Amacı                     |
 | ------------ | ---------------------------------- |
@@ -108,13 +107,11 @@ Veri setindeki etiketler şu şekilde dönüştürülmüştür:
 | `__label__1`    | Negative            |
 | `__label__2`    | Positive            |
 
-Veri setinde doğrudan Neutral sınıfı bulunmamaktadır. Bu projede Neutral sınıfı, modelin tahmin güven skoru belirlenen eşik değerin altında kaldığında atanmıştır.
+Veri setinde doğrudan **Neutral** sınıfı bulunmamaktadır. Bu projede Neutral sınıfı, modelin tahmin güven skoru belirlenen eşik değerin altında kaldığında atanmıştır.
 
 ---
 
 ## Proje Klasör Yapısı
-
-Proje klasör yapısı aşağıdaki gibidir:
 
 ```text
 sentiment-analysis-dashboard/
@@ -139,8 +136,10 @@ sentiment-analysis-dashboard/
 │   ├── dashboard_dataset_summary.png.jpg
 │   ├── dashboard_model_results.png.jpg
 │   ├── dashboard_prediction.png.jpg
-│   ├── dashboard_statistics.png.jpg
-│   ├── dashboard_statistics.png2.jpg
+│   ├── dashboard_statistics1.png.jpg
+│   ├── dashboard_statistics2.png.jpg
+│   ├── dashboard_statistics3.png.jpg
+│   ├── dashboard_statistics4.png.jpg
 │   ├── sql_confusion_matrix.png.jpg
 │   ├── sql_model_results.png.jpg
 │   └── sql_reviews.png.jpg
@@ -156,8 +155,6 @@ sentiment-analysis-dashboard/
 ## NLP Ön İşleme Süreci
 
 Veri hazırlama aşamasında yorum metinleri model eğitimine uygun hale getirilmiştir.
-
-Uygulanan adımlar:
 
 ### 1. Küçük Harfe Çevirme
 
@@ -251,7 +248,7 @@ SentimentDashboardDB
 
 Projede kullanılan temel tablolar:
 
-### 1. reviews
+### 1. `reviews`
 
 Dashboard üzerinden girilen yorumların ve tahmin sonuçlarının saklandığı tablodur.
 
@@ -264,7 +261,7 @@ Dashboard üzerinden girilen yorumların ve tahmin sonuçlarının saklandığı
 | confidence_score    | Tahmin güven skoru          |
 | classification_time | Sınıflandırma zamanı        |
 
-### 2. model_results
+### 2. `model_results`
 
 Eğitilen modellerin performans sonuçlarının saklandığı tablodur.
 
@@ -278,7 +275,7 @@ Eğitilen modellerin performans sonuçlarının saklandığı tablodur.
 | f1_score        | F1-score değeri  |
 | created_at      | Kayıt zamanı     |
 
-### 3. prepared_reviews
+### 3. `prepared_reviews`
 
 Hazırlanmış ve temizlenmiş eğitim verilerinin tutulduğu tablodur.
 
@@ -291,7 +288,7 @@ Hazırlanmış ve temizlenmiş eğitim verilerinin tutulduğu tablodur.
 | sentiment          | Duygu etiketi          |
 | created_at         | Kayıt zamanı           |
 
-### 4. model_confusion_matrices
+### 4. `model_confusion_matrices`
 
 Her model için confusion matrix değerlerinin saklandığı tablodur.
 
@@ -543,23 +540,39 @@ Bu ekranda kullanıcı yeni bir müşteri yorumu girebilir. Sistem girilen yorum
 
 ---
 
-### 2. Yorum İstatistikleri
+### 2. Yorum İstatistikleri - Genel Metrikler ve Duygu Dağılımı
 
-Bu ekranda dashboard üzerinden analiz edilen yorumların genel istatistikleri gösterilir. Toplam yorum sayısı, pozitif ve negatif yorum sayısı, neutral yorum sayısı ve ortalama güven skoru yer alır.
+Bu ekranda toplam yorum sayısı, pozitif yorum sayısı, negatif yorum sayısı, neutral yorum sayısı ve ortalama güven skoru gösterilmektedir. Ayrıca duygu dağılımı pasta grafik olarak sunulmaktadır.
 
-![Yorum İstatistikleri](screenshots/dashboard_statistics.png.jpg)
-
----
-
-### 3. En Sık Kullanılan Kelimeler ve Son Yorumlar
-
-Bu ekranda yorumlarda en sık geçen kelimeler ve son analiz edilen yorumlar tablo halinde gösterilir.
-
-![Kelime Frekansı ve Son Yorumlar](screenshots/dashboard_statistics.png2.jpg)
+![Yorum İstatistikleri Genel Metrikler](screenshots/dashboard_statistics1.png.jpg)
 
 ---
 
-### 4. Model Sonuçları
+### 3. Günlük Duygu Eğilimi
+
+Bu görselde analiz edilen yorumların zamana göre dağılımı gösterilmektedir. Positive ve Negative sınıflarının günlük eğilimleri grafik üzerinden incelenebilir.
+
+![Günlük Duygu Eğilimi](screenshots/dashboard_statistics2.png.jpg)
+
+---
+
+### 4. En Sık Kullanılan Kelimeler
+
+Bu bölümde analiz edilen yorumlarda en sık geçen kelimeler gösterilmektedir. Kelime frekansı, yorumların genel içeriği hakkında hızlı bir fikir verir.
+
+![En Sık Kullanılan Kelimeler](screenshots/dashboard_statistics3.png.jpg)
+
+---
+
+### 5. Son Analiz Edilen Yorumlar
+
+Bu ekranda dashboard üzerinden analiz edilen son yorumlar tablo halinde gösterilmektedir. Tablo içinde yorum metni, tahmin edilen duygu, güven skoru ve sınıflandırma zamanı bulunmaktadır.
+
+![Son Analiz Edilen Yorumlar](screenshots/dashboard_statistics4.png.jpg)
+
+---
+
+### 6. Model Sonuçları
 
 Bu ekranda eğitilen modellerin performans sonuçları karşılaştırılır. Logistic Regression, Naive Bayes ve Support Vector Machine modelleri Accuracy, Precision, Recall ve F1-score metrikleriyle değerlendirilir.
 
@@ -567,15 +580,15 @@ Bu ekranda eğitilen modellerin performans sonuçları karşılaştırılır. Lo
 
 ---
 
-### 5. Confusion Matrix Heatmap
+### 7. Confusion Matrix Heatmap
 
-Bu ekranda seçilen modelin confusion matrix sonucu heatmap olarak gösterilir.
+Bu ekranda seçilen modelin confusion matrix sonucu heatmap olarak gösterilir. Gerçek sınıflar ile tahmin edilen sınıflar arasındaki ilişki bu grafik üzerinden analiz edilebilir.
 
 ![Confusion Matrix](screenshots/dashboard_confusion_matrix.png.jpg)
 
 ---
 
-### 6. Veri Seti Özeti
+### 8. Veri Seti Özeti
 
 Bu ekranda hazırlanmış eğitim verisi sayısı, dashboard yorum kayıtları ve eğitilen model sayısı gösterilir.
 
@@ -583,7 +596,7 @@ Bu ekranda hazırlanmış eğitim verisi sayısı, dashboard yorum kayıtları v
 
 ---
 
-### 7. SQL Server - Reviews Tablosu
+### 9. SQL Server - Reviews Tablosu
 
 Bu ekran görüntüsü, dashboard üzerinden analiz edilen yorumların SQL Server veritabanındaki `reviews` tablosuna kaydedildiğini göstermektedir.
 
@@ -591,7 +604,7 @@ Bu ekran görüntüsü, dashboard üzerinden analiz edilen yorumların SQL Serve
 
 ---
 
-### 8. SQL Server - Model Results Tablosu
+### 10. SQL Server - Model Results Tablosu
 
 Bu ekran görüntüsü, model performans metriklerinin SQL Server üzerindeki `model_results` tablosuna kaydedildiğini göstermektedir.
 
@@ -599,7 +612,7 @@ Bu ekran görüntüsü, model performans metriklerinin SQL Server üzerindeki `m
 
 ---
 
-### 9. SQL Server - Confusion Matrix Tablosu
+### 11. SQL Server - Confusion Matrix Tablosu
 
 Bu ekran görüntüsü, her model için confusion matrix değerlerinin SQL Server üzerindeki `model_confusion_matrices` tablosunda saklandığını göstermektedir.
 
@@ -705,7 +718,7 @@ Bu hata, SQL Server ODBC Driver kurulu olmadığında oluşabilir.
 * Windows için ODBC Driver for SQL Server kurulmalıdır.
 * `.env` dosyasındaki driver adı sistemde kurulu olan driver ile aynı olmalıdır.
 
-Örnek:
+Örnek driver adı:
 
 ```text
 ODBC Driver 18 for SQL Server
@@ -863,5 +876,7 @@ Bu proje, NLP, makine öğrenmesi, SQL Server, Docker ve dashboard geliştirme s
 ## Geliştirici
 
 **Ilgın Bor**
+
+
 
 
