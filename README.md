@@ -1,8 +1,10 @@
 # Duygu Analizi Gösterge Paneli
 
-Bu proje, müşteri yorumlarını **Doğal Dil İşleme (NLP)** ve **Makine Öğrenmesi** yöntemleriyle analiz eden, sonuçları **SQL Server** veritabanına kaydeden ve **Streamlit** arayüzü üzerinden görselleştiren uçtan uca bir duygu analizi uygulamasıdır.
+Bu proje, proje yönergesinde **Amazon Alexa Reviews** olarak belirtilen ve Kaggle üzerinde `bittlingmayer/amazonreviews` bağlantısıyla verilen müşteri yorumları veri setini kullanarak geliştirilmiş uçtan uca bir **duygu analizi uygulamasıdır**.
 
-Uygulama, Amazon ürün yorumlarını kullanarak yorumları **Positive**, **Negative** veya güven skoru düşükse **Neutral** olarak sınıflandırır. Ayrıca model performanslarını karşılaştırır, confusion matrix sonuçlarını gösterir ve kullanıcı tarafından girilen yeni yorumları veritabanına kaydeder.
+Projede müşteri yorumları **Doğal Dil İşleme (NLP)** ve **Makine Öğrenmesi** yöntemleriyle analiz edilmiştir. Tahmin sonuçları **SQL Server** veritabanına kaydedilmiş ve sonuçlar **Streamlit** tabanlı kullanıcı dostu bir gösterge paneli üzerinden görselleştirilmiştir.
+
+Uygulama, yorumları **Positive**, **Negative** veya model güven skoru düşük olduğunda **Neutral** olarak sınıflandırır. Ayrıca model performanslarını karşılaştırır, confusion matrix sonuçlarını gösterir, yorum istatistiklerini analiz eder ve kullanıcı tarafından girilen yeni yorumları veritabanına kaydeder.
 
 ---
 
@@ -50,10 +52,13 @@ Bu proje; veri ön işleme, makine öğrenmesi, SQL veritabanı entegrasyonu, ha
 
 Projede aşağıdaki özellikler bulunmaktadır:
 
-* Amazon Reviews veri seti kullanımı
+* Amazon Alexa Reviews olarak belirtilen Kaggle veri setinin kullanılması
+* Veri setinin pandas DataFrame formatında işlenmesi
+* Hazırlanmış verilerin SQL Server tablolarına yüklenmesi
 * Metin temizleme
-* Tokenization
+* Küçük harfe dönüştürme
 * Stopword temizleme
+* Tokenization
 * TF-IDF vektörleştirme
 * Üç farklı makine öğrenmesi modeli eğitimi
 * Model performans karşılaştırması
@@ -64,7 +69,10 @@ Projede aşağıdaki özellikler bulunmaktadır:
 * Confidence score hesaplama
 * Tahminlerin SQL Server veritabanına kaydedilmesi
 * Streamlit dashboard ile görselleştirme
-* SQL Server tabloları ile veri takibi
+* Pozitif, negatif ve neutral duygu dağılımı analizi
+* Günlük duygu eğilimi analizi
+* Kelime frekans analizi
+* Model karşılaştırma grafikleri
 * GitHub üzerinde anlamlı commit geçmişi
 
 ---
@@ -92,13 +100,13 @@ Projede aşağıdaki özellikler bulunmaktadır:
 
 ## Veri Seti
 
-Bu projede Kaggle üzerinde bulunan **Amazon Reviews** veri seti kullanılmıştır.
-
-Veri seti:
+Bu projede, proje yönergesinde **Amazon Alexa Reviews** olarak belirtilen Kaggle veri seti kullanılmıştır. Yönergede verilen dataset bağlantısı aşağıdaki Kaggle veri setidir:
 
 ```text
 bittlingmayer/amazonreviews
 ```
+
+Projede kullanılan veri seti bu bağlantıdan indirilmiş ve `data/raw` klasörüne kaydedilmiştir. Veri setindeki yorumlar duygu analizi modeli geliştirmek için temizlenmiş, tokenize edilmiş ve TF-IDF yöntemiyle sayısal özelliklere dönüştürülmüştür.
 
 Veri setindeki etiketler şu şekilde dönüştürülmüştür:
 
@@ -107,7 +115,7 @@ Veri setindeki etiketler şu şekilde dönüştürülmüştür:
 | `__label__1`    | Negative            |
 | `__label__2`    | Positive            |
 
-Veri setinde doğrudan **Neutral** sınıfı bulunmamaktadır. Bu projede Neutral sınıfı, modelin tahmin güven skoru belirlenen eşik değerin altında kaldığında atanmıştır.
+Veri setinde doğrudan **Neutral** sınıfı bulunmamaktadır. Bu projede Neutral sınıfı, modelin tahmin güven skoru belirlenen eşik değerin altında kaldığında atanmıştır. Bu sayede modelin emin olmadığı yorumlar kullanıcıya Neutral olarak gösterilmiştir.
 
 ---
 
@@ -174,11 +182,11 @@ Birden fazla boşluk tek boşluğa indirilmiş ve metnin başındaki/sonundaki b
 
 ### 5. Tokenization
 
-Temizlenmiş metin kelimelere ayrılmıştır.
+Temizlenmiş metin kelimelere ayrılmıştır. Bu işlem sayesinde yorum metinleri kelime bazlı analiz edilebilir hale getirilmiştir.
 
 ### 6. Stopword Temizleme
 
-Anlam taşımayan, sık geçen kelimeler veri setinden çıkarılmıştır.
+Anlam taşımayan ve sık geçen kelimeler veri setinden çıkarılmıştır.
 
 Örnek stopword kelimeler:
 
@@ -188,7 +196,7 @@ the, and, is, it, to, of, for, in, on
 
 ### 7. TF-IDF Vektörleştirme
 
-Model eğitiminde metinlerin sayısal değerlere çevrilmesi için `TfidfVectorizer` kullanılmıştır.
+Model eğitiminde metinlerin sayısal değerlere çevrilmesi için `TfidfVectorizer` kullanılmıştır. TF-IDF yöntemi, kelimelerin yorumlar içindeki önemini sayısal olarak temsil eder.
 
 ### 8. Hazırlanmış Veri Çıktısı
 
@@ -858,7 +866,8 @@ Bu proje kapsamında müşteri yorumlarını analiz eden uçtan uca bir duygu an
 
 Proje ile aşağıdaki kazanımlar elde edilmiştir:
 
-* Amazon Reviews veri seti işlendi.
+* Yönergede belirtilen Kaggle veri seti kullanıldı.
+* Amazon Alexa Reviews olarak belirtilen müşteri yorumları veri seti işlendi.
 * NLP ön işleme adımları uygulandı.
 * Logistic Regression, Naive Bayes ve Support Vector Machine modelleri eğitildi.
 * Model performansları karşılaştırıldı.
@@ -876,6 +885,8 @@ Bu proje, NLP, makine öğrenmesi, SQL Server, Docker ve dashboard geliştirme s
 ## Geliştirici
 
 **Ilgın Bor**
+
+
 
 
 
